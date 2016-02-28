@@ -81,53 +81,53 @@ osmesa-sys = "0.0.5"
 wayland-client = { version = "0.5.4", features = ["egl", "dlopen"] }
 wayland-kbd = "0.3.3"
 wayland-window = "0.2.2"
-x11-dl = "~2.3"
+x11-dl = { git = "https://github.com/jwilm/x11-rs", rev = "40f08df7b4408980b922b3c6e258c9c6765c2c24" }
 
 [target.i586-unknown-linux-gnu.dependencies]
 osmesa-sys = "0.0.5"
 wayland-client = { version = "0.5.4", features = ["egl", "dlopen"] }
 wayland-kbd = "0.3.3"
 wayland-window = "0.2.2"
-x11-dl = "~2.3"
+x11-dl = { git = "https://github.com/jwilm/x11-rs", rev = "40f08df7b4408980b922b3c6e258c9c6765c2c24" }
 
 [target.x86_64-unknown-linux-gnu.dependencies]
 osmesa-sys = "0.0.5"
 wayland-client = { version = "0.5.4", features = ["egl", "dlopen"] }
 wayland-kbd = "0.3.3"
 wayland-window = "0.2.2"
-x11-dl = "~2.3"
+x11-dl = { git = "https://github.com/jwilm/x11-rs", rev = "40f08df7b4408980b922b3c6e258c9c6765c2c24" }
 
 [target.arm-unknown-linux-gnueabihf.dependencies]
 osmesa-sys = "0.0.5"
 wayland-client = { version = "0.5.4", features = ["egl", "dlopen"] }
 wayland-kbd = "0.3.3"
 wayland-window = "0.2.2"
-x11-dl = "~2.3"
+x11-dl = { git = "https://github.com/jwilm/x11-rs", rev = "40f08df7b4408980b922b3c6e258c9c6765c2c24" }
 
 [target.armv7-unknown-linux-gnueabihf.dependencies]
 osmesa-sys = "0.0.5"
 wayland-client = { version = "0.5.4", features = ["egl", "dlopen"] }
 wayland-kbd = "0.3.3"
 wayland-window = "0.2.2"
-x11-dl = "~2.3"
+x11-dl = { git = "https://github.com/jwilm/x11-rs", rev = "40f08df7b4408980b922b3c6e258c9c6765c2c24" }
 
 [target.aarch64-unknown-linux-gnu.dependencies]
 osmesa-sys = "0.0.5"
 wayland-client = { version = "0.5.4", features = ["egl", "dlopen"] }
 wayland-kbd = "0.3.3"
 wayland-window = "0.2.2"
-x11-dl = "~2.3"
+x11-dl = { git = "https://github.com/jwilm/x11-rs", rev = "40f08df7b4408980b922b3c6e258c9c6765c2c24" }
 
 [target.x86_64-unknown-dragonfly.dependencies]
 osmesa-sys = "0.0.5"
 wayland-client = { version = "0.5.4", features = ["egl", "dlopen"] }
 wayland-kbd = "0.3.3"
 wayland-window = "0.2.2"
-x11-dl = "~2.3"
+x11-dl = { git = "https://github.com/jwilm/x11-rs", rev = "40f08df7b4408980b922b3c6e258c9c6765c2c24" }
 
 [target.x86_64-unknown-freebsd.dependencies]
 osmesa-sys = "0.0.5"
 wayland-client = { version = "0.5.4", features = ["egl", "dlopen"] }
 wayland-kbd = "0.3.3"
 wayland-window = "0.2.2"
-x11-dl = "~2.3"
+x11-dl = { git = "https://github.com/jwilm/x11-rs", rev = "40f08df7b4408980b922b3c6e258c9c6765c2c24" }

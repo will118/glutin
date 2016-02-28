@@ -729,6 +729,30 @@ impl Window {
         }
     }
 
+    pub fn get_dpi(&self) -> Option<(f32, f32)> {
+        let mut len: libc::c_int = 0;
+
+        let width_mm = unsafe {
+            (self.x.display.xlib.XDisplayWidthMM)(self.x.display.display, self.x.screen_id)
+        } as f32;
+        let height_mm = unsafe {
+            (self.x.display.xlib.XDisplayHeightMM)(self.x.display.display, self.x.screen_id)
+        } as f32;
+        let width = unsafe {
+            (self.x.display.xlib.XDisplayWidth)(self.x.display.display, self.x.screen_id)
+        } as f32;
+        let height = unsafe {
+            (self.x.display.xlib.XDisplayHeight)(self.x.display.display, self.x.screen_id)
+        } as f32;
+
+        let mm_inch = 25.4;
+
+        let dpi_height = height * mm_inch / height_mm;
+        let dpi_width = width * mm_inch / width_mm;
+
+        Some((dpi_width, dpi_height))
+    }
+
     #[inline]
     pub fn get_position(&self) -> Option<(i32, i32)> {
         self.get_geometry().map(|(x, y, _, _, _)| (x, y))

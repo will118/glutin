@@ -210,6 +210,14 @@ impl Window {
     }
 
     #[inline]
+    pub fn get_dpi(&self) -> Option<(f32, f32)> {
+        match self {
+            &Window::X(ref w) => w.get_dpi(),
+            &Window::Wayland(ref w) => panic!("not implemented")
+        }
+    }
+
+    #[inline]
     pub fn show(&self) {
         match self {
             &Window::X(ref w) => w.show(),

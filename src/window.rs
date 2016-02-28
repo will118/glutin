@@ -254,6 +254,11 @@ impl Default for Window {
 }
 
 impl Window {
+
+    pub fn get_dpi(&self) -> Option<(f32, f32)> {
+        self.window.get_dpi()
+    }
+
     /// Creates a new OpenGL context, and a Window for platforms where this is appropriate.
     ///
     /// This function is equivalent to `WindowBuilder::new().build()`.
