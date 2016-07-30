@@ -31,6 +31,9 @@ extern crate shared_library;
 
 extern crate libc;
 
+#[macro_use]
+extern crate bitflags;
+
 #[cfg(target_os = "windows")]
 extern crate winapi;
 #[cfg(target_os = "windows")]

@@ -4,6 +4,8 @@ use Event as GlutinEvent;
 use ElementState;
 use VirtualKeyCode;
 
+use events::Mods;
+
 use wayland_client::ProxyId;
 use wayland_client::wayland::seat::{WlKeyboardEvent,WlKeyboardKeyState};
 
@@ -43,7 +45,8 @@ pub fn translate_kbd_events(
                                     WlKeyboardKeyState::Released =>ElementState::Released
                                 },
                                 (kevt.keycode & 0xff) as u8,
-                                vkcode
+                                vkcode,
+                                Mods::empty(), // TODO
                             ),
                             surface
                         ));
@@ -54,7 +57,6 @@ pub fn translate_kbd_events(
                             ));
                         }
                     }
-                    
                 }
                 MappedKeyboardEvent::Other(oevt) => match oevt {
                     WlKeyboardEvent::Enter(_, surface, _) => {

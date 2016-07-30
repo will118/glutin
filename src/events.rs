@@ -1,5 +1,21 @@
 use std::path::PathBuf;
 
+pub mod mods {
+    bitflags! {
+        pub flags Mods: u8 {
+            const ALT     = 0b0001,
+            const SHIFT   = 0b0010,
+            const CONTROL = 0b0100,
+            const SUPER   = 0b1000,
+
+            const ANY     = ALT.bits | SHIFT.bits | CONTROL.bits | SUPER.bits,
+            const NONE    = 0b0000,
+        }
+    }
+}
+
+pub use mods::Mods;
+
 #[derive(Clone, Debug)]
 pub enum Event {
     /// The size of the window has changed.
@@ -23,7 +39,7 @@ pub enum Event {
     Focused(bool),
 
     /// An event from the keyboard has been received.
-    KeyboardInput(ElementState, ScanCode, Option<VirtualKeyCode>),
+    KeyboardInput(ElementState, ScanCode, Option<VirtualKeyCode>, Mods),
 
     /// The cursor has moved on the window.
     ///
