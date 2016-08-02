@@ -39,6 +39,7 @@ use std::ops::Deref;
 
 use events::ElementState;
 use events::{self, MouseButton, TouchPhase};
+use events::{mods, Mods};
 
 pub use self::monitor::{MonitorId, get_available_monitors, get_primary_monitor};
 pub use self::headless::HeadlessContext;
@@ -616,9 +617,9 @@ impl Window {
 
     unsafe fn modifier_event(event: id, keymask: appkit::NSEventModifierFlags, key: events::VirtualKeyCode, key_pressed: bool) -> Option<Event> {
         if !key_pressed && NSEvent::modifierFlags(event).contains(keymask) {
-            return Some(Event::KeyboardInput(ElementState::Pressed, NSEvent::keyCode(event) as u8, Some(key)));
+            return Some(Event::KeyboardInput(ElementState::Pressed, NSEvent::keyCode(event) as u8, Some(key), Mods::empty()));
         } else if key_pressed && !NSEvent::modifierFlags(event).contains(keymask) {
-            return Some(Event::KeyboardInput(ElementState::Released, NSEvent::keyCode(event) as u8, Some(key)));
+            return Some(Event::KeyboardInput(ElementState::Released, NSEvent::keyCode(event) as u8, Some(key), Mods::empty()));
         }
 
         return None;
@@ -821,6 +822,30 @@ impl Clone for IdRef {
     }
 }
 
+fn event_mods(event: id) -> Mods {
+    let mut ev_mods = Mods::empty();
+    let flags = unsafe {
+        NSEvent::modifierFlags(event)
+    };
+    if flags.contains(appkit::NSShiftKeyMask) {
+        ev_mods.insert(mods::SHIFT);
+    }
+
+    if flags.contains(appkit::NSControlKeyMask) {
+        ev_mods.insert(mods::CONTROL);
+    }
+
+    if flags.contains(appkit::NSCommandKeyMask) {
+        ev_mods.insert(mods::SUPER);
+    }
+
+    if flags.contains(appkit::NSAlternateKeyMask) {
+        ev_mods.insert(mods::ALT);
+    }
+
+    ev_mods
+}
+
 #[allow(non_snake_case, non_upper_case_globals)]
 unsafe fn NSEventToEvent(window: &Window, nsevent: id) -> Option<Event> {
     if nsevent == nil { return None; }
@@ -860,15 +885,16 @@ unsafe fn NSEventToEvent(window: &Window, nsevent: id) -> Option<Event> {
             }
 
             let vkey =  event::vkeycode_to_element(NSEvent::keyCode(nsevent));
-            events.push_back(Event::KeyboardInput(ElementState::Pressed, NSEvent::keyCode(nsevent) as u8, vkey));
+            let ev_mods = event_mods(nsevent);
+            events.push_back(Event::KeyboardInput(ElementState::Pressed, NSEvent::keyCode(nsevent) as u8, vkey, ev_mods));
             let event = events.pop_front();
             window.delegate.state.pending_events.lock().unwrap().extend(events.into_iter());
             event
         },
         appkit::NSKeyUp => {
             let vkey =  event::vkeycode_to_element(NSEvent::keyCode(nsevent));
-
-            Some(Event::KeyboardInput(ElementState::Released, NSEvent::keyCode(nsevent) as u8, vkey))
+            let ev_mods = event_mods(nsevent);
+            Some(Event::KeyboardInput(ElementState::Released, NSEvent::keyCode(nsevent) as u8, vkey, ev_mods))
         },
         appkit::NSFlagsChanged => {
             let mut events = VecDeque::new();
