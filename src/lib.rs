@@ -129,6 +129,9 @@ pub trait GlContext {
     /// Sets the context as the current context.
     unsafe fn make_current(&self) -> Result<(), ContextError>;
 
+    /// Clear current context
+    fn clear_current(&self) -> Result<(), ContextError>;
+
     /// Returns true if this context is the current one in this thread.
     fn is_current(&self) -> bool;
 

@@ -733,6 +733,15 @@ impl GlContext for Window {
     }
 
     #[inline]
+    fn clear_current(&self) -> Result<(), ContextError> {
+        unsafe {
+            NSOpenGLContext::clearCurrentContext(nil);
+        }
+
+        Ok(())
+    }
+
+    #[inline]
     fn is_current(&self) -> bool {
         unsafe {
             let current = NSOpenGLContext::currentContext(nil);

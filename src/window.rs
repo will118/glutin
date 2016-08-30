@@ -390,6 +390,12 @@ impl Window {
         self.window.make_current()
     }
 
+    /// Clears the current context.
+    #[inline]
+    pub fn clear_current(&self) -> Result<(), ContextError> {
+        self.window.clear_current()
+    }
+
     /// Returns true if this context is the current one in this thread.
     #[inline]
     pub fn is_current(&self) -> bool {
@@ -499,6 +505,12 @@ impl GlContext for Window {
     #[inline]
     unsafe fn make_current(&self) -> Result<(), ContextError> {
         self.make_current()
+    }
+
+    /// Clears the current context.
+    #[inline]
+    fn clear_current(&self) -> Result<(), ContextError> {
+        self.clear_current()
     }
 
     #[inline]
