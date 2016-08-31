@@ -337,6 +337,11 @@ impl GlContext for Window {
     }
 
     #[inline]
+    fn clear_current(&self) -> Result<(), ContextError> {
+        self.context.clear_current()
+    }
+
+    #[inline]
     fn is_current(&self) -> bool {
         self.context.is_current()
     }

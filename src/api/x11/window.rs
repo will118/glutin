@@ -1039,6 +1039,15 @@ impl GlContext for Window {
     }
 
     #[inline]
+    fn clear_current(&self) -> Result<(), ContextError> {
+        match self.x.context {
+            Context::Glx(ref ctxt) => ctxt.clear_current(),
+            Context::Egl(ref ctxt) => ctxt.clear_current(),
+            Context::None => Ok(())
+        }
+    }
+
+    #[inline]
     fn is_current(&self) -> bool {
         match self.x.context {
             Context::Glx(ref ctxt) => ctxt.is_current(),
