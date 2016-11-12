@@ -188,7 +188,13 @@ impl XInputEventHandler {
 
         let vkey = events::keycode_to_element(keysym as libc::c_uint);
 
-        translated_events.push(KeyboardInput(state, event.keycode as u8, vkey, ev_mods));
+        let chars = if written.is_empty() {
+            None
+        } else {
+            Some(written)
+        };
+
+        translated_events.push(KeyboardInput(state, event.keycode as u8, vkey, ev_mods, chars));
         translated_events
     }
 

@@ -617,9 +617,9 @@ impl Window {
 
     unsafe fn modifier_event(event: id, keymask: appkit::NSEventModifierFlags, key: events::VirtualKeyCode, key_pressed: bool) -> Option<Event> {
         if !key_pressed && NSEvent::modifierFlags(event).contains(keymask) {
-            return Some(Event::KeyboardInput(ElementState::Pressed, NSEvent::keyCode(event) as u8, Some(key), Mods::empty()));
+            return Some(Event::KeyboardInput(ElementState::Pressed, NSEvent::keyCode(event) as u8, Some(key), Mods::empty(), None));
         } else if key_pressed && !NSEvent::modifierFlags(event).contains(keymask) {
-            return Some(Event::KeyboardInput(ElementState::Released, NSEvent::keyCode(event) as u8, Some(key), Mods::empty()));
+            return Some(Event::KeyboardInput(ElementState::Released, NSEvent::keyCode(event) as u8, Some(key), Mods::empty(), None));
         }
 
         return None;
@@ -889,13 +889,14 @@ unsafe fn NSEventToEvent(window: &Window, nsevent: id) -> Option<Event> {
             let mut events = VecDeque::new();
             let received_c_str = nsevent.characters().UTF8String();
             let received_str = CStr::from_ptr(received_c_str);
-            for received_char in from_utf8(received_str.to_bytes()).unwrap().chars() {
+            let received_str = from_utf8(received_str.to_bytes()).unwrap();
+            for received_char in received_str.chars() {
                 events.push_back(Event::ReceivedCharacter(received_char));
             }
 
             let vkey =  event::vkeycode_to_element(NSEvent::keyCode(nsevent));
             let ev_mods = event_mods(nsevent);
-            events.push_back(Event::KeyboardInput(ElementState::Pressed, NSEvent::keyCode(nsevent) as u8, vkey, ev_mods));
+            events.push_back(Event::KeyboardInput(ElementState::Pressed, NSEvent::keyCode(nsevent) as u8, vkey, ev_mods, Some(received_str.to_owned())));
             let event = events.pop_front();
             window.delegate.state.pending_events.lock().unwrap().extend(events.into_iter());
             event
@@ -903,7 +904,7 @@ unsafe fn NSEventToEvent(window: &Window, nsevent: id) -> Option<Event> {
         appkit::NSKeyUp => {
             let vkey =  event::vkeycode_to_element(NSEvent::keyCode(nsevent));
             let ev_mods = event_mods(nsevent);
-            Some(Event::KeyboardInput(ElementState::Released, NSEvent::keyCode(nsevent) as u8, vkey, ev_mods))
+            Some(Event::KeyboardInput(ElementState::Released, NSEvent::keyCode(nsevent) as u8, vkey, ev_mods, None))
         },
         appkit::NSFlagsChanged => {
             let mut events = VecDeque::new();

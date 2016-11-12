@@ -47,6 +47,7 @@ pub fn translate_kbd_events(
                                 (kevt.keycode & 0xff) as u8,
                                 vkcode,
                                 Mods::empty(), // TODO
+                                text.clone()
                             ),
                             surface
                         ));

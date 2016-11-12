@@ -39,7 +39,7 @@ pub enum Event {
     Focused(bool),
 
     /// An event from the keyboard has been received.
-    KeyboardInput(ElementState, ScanCode, Option<VirtualKeyCode>, Mods),
+    KeyboardInput(ElementState, ScanCode, Option<VirtualKeyCode>, Mods, Option<String>),
 
     /// The cursor has moved on the window.
     ///
