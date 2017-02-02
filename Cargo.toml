@@ -34,7 +34,7 @@ core-graphics = "0.3"
 
 [target.'cfg(target_os = "macos")'.dependencies.cocoa]
 git = "https://github.com/will118/cocoa-rs"
-rev = "c84b951c0ae62ef96feda0ac941ca2f2e20beab1"
+rev = "b51948a77756f35303484df951849861d3b128a4"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 winapi = "0.2"
