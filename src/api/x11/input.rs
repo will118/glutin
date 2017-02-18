@@ -136,68 +136,69 @@ impl XInputEventHandler {
             return translated_events;
         }
 
-        let state;
-        if event.type_ == ffi::KeyPress {
-            state = Pressed;
-        } else {
-            state = Released;
-        }
-
-        let mut kp_keysym = 0;
-
-        let mut ev_mods = Mods::empty();
-
-        let written = unsafe {
-            use std::str;
-
-            let mut buffer: [u8; 16] = [mem::uninitialized(); 16];
-            let raw_ev: *mut ffi::XKeyEvent = event;
-            let count = (self.display.xlib.Xutf8LookupString)(self.ic, mem::transmute(raw_ev),
-            mem::transmute(buffer.as_mut_ptr()),
-            buffer.len() as libc::c_int, &mut kp_keysym, ptr::null_mut());
-
-            {
-                // Translate x event state to mods
-                let state = event.state;
-                if (state & ffi::Mod1Mask) != 0 {
-                    ev_mods.insert(mods::ALT);
-                }
-
-                if (state & ffi::ShiftMask) != 0 {
-                    ev_mods.insert(mods::SHIFT);
-                }
-
-                if (state & ffi::ControlMask) != 0 {
-                    ev_mods.insert(mods::CONTROL);
-                }
-
-                if (state & ffi::Mod4Mask) != 0 {
-                    ev_mods.insert(mods::SUPER);
-                }
-            }
-
-            str::from_utf8(&buffer[..count as usize]).unwrap_or("").to_string()
-        };
-
-        for chr in written.chars() {
-            translated_events.push(ReceivedCharacter(chr));
-        }
-
         let mut keysym = unsafe {
             (self.display.xlib.XKeycodeToKeysym)(self.display.display, event.keycode as ffi::KeyCode, 0)
         };
 
-        if (ffi::XK_KP_Space as libc::c_ulong <= keysym) && (keysym <= ffi::XK_KP_9 as libc::c_ulong) {
-            keysym = kp_keysym
+        let (state, chars) = if event.type_ == ffi::KeyPress {
+            let mut kp_keysym = 0;
+
+            let written = unsafe {
+                use std::str;
+
+                let mut buffer: [u8; 16] = [mem::uninitialized(); 16];
+                let raw_ev: *mut ffi::XKeyEvent = event;
+                let count = (self.display.xlib.Xutf8LookupString)(self.ic, mem::transmute(raw_ev),
+                mem::transmute(buffer.as_mut_ptr()),
+                buffer.len() as libc::c_int, &mut kp_keysym, ptr::null_mut());
+
+                str::from_utf8(&buffer[..count as usize]).unwrap_or("").to_string()
+            };
+
+            for chr in written.chars() {
+                translated_events.push(ReceivedCharacter(chr));
+            }
+
+            if (ffi::XK_KP_Space as libc::c_ulong <= keysym) && (keysym <= ffi::XK_KP_9 as libc::c_ulong) {
+                keysym = kp_keysym
+            };
+
+            let chars = if written.is_empty() {
+                None
+            } else {
+                Some(written)
+            };
+
+            (Pressed, chars)
+        } else {
+            // According to the manual for Xutf8LookupString, calling it with a
+            // KeyRelease event is undefined behavior.
+            (Released, None)
         };
+
+        // Modifier keys for this event
+        let mut ev_mods = Mods::empty();
+        {
+            // Translate x event state to mods
+            let state = event.state;
+            if (state & ffi::Mod1Mask) != 0 {
+                ev_mods.insert(mods::ALT);
+            }
+
+            if (state & ffi::ShiftMask) != 0 {
+                ev_mods.insert(mods::SHIFT);
+            }
+
+            if (state & ffi::ControlMask) != 0 {
+                ev_mods.insert(mods::CONTROL);
+            }
+
+            if (state & ffi::Mod4Mask) != 0 {
+                ev_mods.insert(mods::SUPER);
+            }
+        }
 
         let vkey = events::keycode_to_element(keysym as libc::c_uint);
-
-        let chars = if written.is_empty() {
-            None
-        } else {
-            Some(written)
-        };
 
         translated_events.push(KeyboardInput(state, event.keycode as u8, vkey, ev_mods, chars));
         translated_events
